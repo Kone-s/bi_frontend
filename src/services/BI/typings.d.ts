@@ -420,4 +420,10 @@ declare namespace API {
     genChart?: string;
     id?: number;
   };
+
+  type reloadChartByAiUsingGETParams = {
+    /** chartId */
+    chartId?: number;
+  };
+
 }

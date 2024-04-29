@@ -243,3 +243,19 @@ export async function updateGenChartUsingPOST(
     ...(options || {}),
   });
 }
+
+/** reloadChartByAi GET /api/chart/reload/gen */
+export async function reloadChartByAiUsingGET(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.reloadChartByAiUsingGETParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/chart/reload/gen', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+

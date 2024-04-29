@@ -4,25 +4,34 @@ import {
   getUserByIdTokens,
   getUserByIdUsingGet,
 } from '@/services/BI/scoreController';
+import { getLoginUserUsingGet } from '@/services/BI/userController';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Card, Col, message, Row, Statistic, theme } from 'antd';
+import { Avatar, Button, Card, Col, Form, Input, message, Modal, Row, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const Welcome = () => {
   const { token } = theme.useToken();
   const [isSignedIn, setSignedIn] = useState(false);
+  const [userData, setUserData] = useState<API.BaseResponseLoginUserVO_>();
   const [score, setScore] = useState<API.BaseResponseLong_>();
   const [signStatus, setSignStatus] = useState<API.BaseResponseInt_>();
   const [tokens, setTokens] = useState<API.BaseResponseLong_>();
 
   const fetchData = async () => {
     try {
-      const [scoreRes, signRes, tokensRes] = await Promise.all([
+      const [userRes, scoreRes, signRes, tokensRes] = await Promise.all([
+        getLoginUserUsingGet(),
         getUserByIdUsingGet(),
         getSignByIdUsingGet(),
         getUserByIdTokens()
       ]);
+      if (userRes.data) {
+        setUserData(userRes);
+      } else {
+        message.error(userRes.msg);
+      }
+
       if (signRes.hasOwnProperty('data')) {
         setSignStatus(signRes);
       } else {
@@ -56,7 +65,7 @@ const Welcome = () => {
     const res = await checkInUsingPost();
     if (res.data === '签到成功') {
       setSignedIn(true);
-      message.success('签到成功');
+      message.success('签到成功, Hello   ' + userData?.data?.nickname);
       fetchData();
     } else {
       message.error(res.msg);
@@ -138,9 +147,6 @@ const Welcome = () => {
                 充值积分
               </Button>
             </Col>
-            {/* <Col span={12}>
-              
-            </Col> */}
           </Row>
         </div>
       </Card>

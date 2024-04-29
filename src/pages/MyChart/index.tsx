@@ -1,12 +1,13 @@
 import { useModel } from '@@/exports';
 import ReactECharts from 'echarts-for-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { deleteChartUsingPOST, listMyChartByPageUsingPOST } from '@/services/BI/chartController';
+import { deleteChartUsingPOST, listMyChartByPageUsingPOST, reloadChartByAiUsingGET } from '@/services/BI/chartController';
 import { EyeOutlined, ExclamationCircleFilled, DeleteOutlined, EllipsisOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ActionType } from '@ant-design/pro-table';
 import ProList from '@ant-design/pro-list';
 import UpdateChartModal from './components/UpdateChartModal';
 import {
+  Button,
   Collapse,
   Dropdown,
   MenuProps,
@@ -37,11 +38,9 @@ const MyChartPage: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<API.ChartQueryRequest>({ ...initSearchParams });
   const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState ?? {};
   const [chartList, setChartList] = useState<API.Chart[]>();
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [count, setCount] = useState(0);
   const [chartId, setChartId] = useState<number>(0);
   const actionRef = useRef<ActionType>();
   const [updateData, setUpdateData] = useState<API.Chart>({});
@@ -55,19 +54,45 @@ const MyChartPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await listMyChartByPageUsingPOST(searchParams);
-      const data = res?.data;
-      if (res.code === 0 && data) {
-        // message.success('加载成功');
-        setChartList(data?.records ?? []);
-        setTotal(data.total ?? 0);
-      } else {
-        message.error('获取图表列表失败');
-      }
+      if (res.data) {
+        // 拿到分页的数据
+        setChartList(res.data.records ?? []);
+        setTotal(res.data.total ?? 0);
+        if (res.data.records) {
+          res.data.records.forEach((data) => {
+            const chartOption = JSON.parse(data.genChart || '{}');
+            if (chartOption.title) chartOption.title = undefined;
+            data.genChart = JSON.stringify(chartOption);
+          });
+        }
+      } else message.error('获取图表失败');
     } catch (e: any) {
-      message.error('获取图表列表失败', e.message);
+      message.error('获取我的图表失败' + e.message);
     }
     setLoading(false);
   };
+
+  /**
+ * 手动重新生成图表
+ * @param params
+ */
+  const reloadChart = async (params: number) => {
+    const data = {
+      chartId: params,
+    };
+    try {
+      const res = await reloadChartByAiUsingGET(data);
+      if (res.code === 0 && data) {
+        message.success('请求成功，图表生成中请稍后');
+        loadData();
+      } else {
+        message.error('重新生成图表失败');
+      }
+    } catch (e: any) {
+      message.error('重新生成图表失败', e.message);
+    }
+  };
+
 
   useEffect(() => {
     loadData();
@@ -103,11 +128,12 @@ const MyChartPage: React.FC = () => {
     }
   };
 
-  const chartRef = useRef(null);
+  const chartRefs = useRef({}); // 使用 useRef 来存储图表的 ref
 
-  const downloadChart = () => {
-    if (chartRef.current) {
-      const instance = chartRef.current.getEchartsInstance();
+  const downloadChart = (chartId: number) => {
+    const chartRef = chartRefs.current[chartId];
+    if (chartRef) {
+      const instance = chartRef.getEchartsInstance();
       const imgData = instance.getDataURL({
         pixelRatio: 2, // 提高图片清晰度
         backgroundColor: '#fff' // 设置背景颜色
@@ -116,7 +142,7 @@ const MyChartPage: React.FC = () => {
     }
   };
 
-  const downloadImage = (dataUrl) => {
+  const downloadImage = (dataUrl: string) => {
     const timestamp = Math.floor(Date.now() / 1000); // 获取当前时间的秒数时间戳
     const filename = `chart-${timestamp}.png`; // 使用时间戳作为文件名
 
@@ -152,7 +178,7 @@ const MyChartPage: React.FC = () => {
       label: (
         <Space
           onClick={() => {
-            downloadChart();
+            downloadChart(chartId);
           }}
         >
           <DownloadOutlined />
@@ -239,26 +265,26 @@ const MyChartPage: React.FC = () => {
               <div>
                 <Result
                   status="error"
-                  title="图表生失败"
+                  title="图表生成失败"
                   subTitle={item.execMessage}
                   extra={[
-                    // <Button
-                    //   key="tryAgain"
-                    //   type="primary"
-                    //   danger
-                    //   onClick={() => {
-                    //     reloadChart(item.id as number);
-                    //   }}
-                    // >
-                    //   请重试
-                    // </Button>,
+                    <Button
+                      key="tryAgain"
+                      type="primary"
+                      danger
+                      onClick={() => {
+                        reloadChart(item.id as number);
+                      }}
+                    >
+                      请重试
+                    </Button>,
                   ]}
                 />
               </div>
             )}
             {item.chartStatus === 'succeed' && (
               <div style={{ width: '100%' }}>
-                <ReactECharts ref={chartRef} option={JSON.parse(item.genChart ?? '{}')} />
+                <ReactECharts ref={(e) => { chartRefs.current[item.id] = e; }} option={JSON.parse(item.genChart ?? '{}')} />
               </div>
             )}
             <div>
