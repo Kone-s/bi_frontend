@@ -27,6 +27,21 @@ export async function sendCaptchaUsingPost(
   });
 }
 
+/** sendCaptcha POST /api/user/register/captcha */
+export async function sendForgetCaptchaUsingPost(
+  body: API.UserCaptchaRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/user/forget/captcha', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** deleteUser POST /api/user/delete */
 export async function deleteUserUsingPost(
   body: API.DeleteRequest,
@@ -147,6 +162,22 @@ export async function userRegisterUsingPost(
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponseLong_>('/api/user/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+
+/** userRegister POST /api/user/register */
+export async function userForgetUsingPost(
+  body: API.UserForgetRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLong_>('/api/user/forget', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

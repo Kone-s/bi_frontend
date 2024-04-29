@@ -2,15 +2,12 @@ import { DefaultFooter } from '@ant-design/pro-components';
 import '@umijs/max';
 import React from 'react';
 
-const Footer: React.FC = () => {
+const LogingFooter: React.FC = () => {
   const defaultMessage = 'Kone';
   const currentYear = new Date().getFullYear();
   return (
     <DefaultFooter
       style={{
-        position:'fixed',
-        bottom:0,
-        width:'80%',
         background: 'none',
       }}
       copyright={`${currentYear} ${defaultMessage}`}
@@ -25,4 +22,4 @@ const Footer: React.FC = () => {
     />
   );
 };
-export default Footer;
+export default LogingFooter;

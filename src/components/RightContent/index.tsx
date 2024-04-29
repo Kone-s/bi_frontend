@@ -8,7 +8,7 @@ export const Question = () => {
         height: 26,
       }}
       onClick={() => {
-        window.open('https://gitee.com/jlongluo/');
+        window.open('https://github.com/Kone-s');
       }}
     >
       <QuestionCircleOutlined />

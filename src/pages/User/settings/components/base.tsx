@@ -1,5 +1,5 @@
 import { city } from '@/constants/geographic/city';
-import { getLoginUserUsingGet } from '@/services/BI/userController';
+import { getLoginUserUsingGet, updateMyUserUsingPost } from '@/services/BI/userController';
 import { UploadOutlined } from '@ant-design/icons';
 import {
   ProForm,
@@ -8,22 +8,48 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { useRequest } from '@umijs/max';
-import { Button, Cascader, Input, message, Upload } from 'antd';
+import { Button, Cascader, Form, Input, message, Upload } from 'antd';
 import React from 'react';
 import useStyles from './index.style';
 
 const validatorPhone = (rule: any, value: string[], callback: (message?: string) => void) => {
   if (!value[0]) {
-    callback('Please input your area code!');
+    callback('请输入区号！');
   }
   if (!value[1]) {
-    callback('Please input your phone number!');
+    callback('请输入电话号码！');
   }
   callback();
 };
 
 const BaseView: React.FC = () => {
   const { styles } = useStyles();
+  const [form] = Form.useForm();
+
+  // 该函数会在上传前执行，会把file对象传过来，可以对上传的文件类型判断，限制大小等
+  const beforeUpload = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('只能上传 JPG/PNG 文件!');
+    }
+    const isLt1M = file.size / 1024 / 1024 < 1;
+    if (!isLt1M) {
+      message.error('图片不能超过1MB!');
+    }
+    return isJpgOrPng && isLt1M;
+  };
+
+  const handleChange = (info: any) => {
+    // 当上传完毕
+    if (info.file.status === 'done') {
+      // 判断是否上传成功
+      if (info.file.response.code === 200) {
+        // 把返回的图像地址设置给 imageUrl
+        getAvatarURL();
+      }
+    }
+  };
+
   // 头像组件 方便以后独立，增加裁剪之类的功能
   const AvatarView = ({ avatar }: { avatar: string }) => (
     <>
@@ -31,7 +57,12 @@ const BaseView: React.FC = () => {
       <div className={styles.avatar}>
         <img src={avatar} alt="avatar" />
       </div>
-      <Upload showUploadList={false}>
+      <Upload name='file'
+        showUploadList={false}
+        action='/api/user/update/myAvatar'
+        beforeUpload={beforeUpload}
+        onChange={handleChange}
+      >
         <div className={styles.button_view}>
           <Button>
             <UploadOutlined />
@@ -49,13 +80,22 @@ const BaseView: React.FC = () => {
       if (userData.userAvatar) {
         return userData.userAvatar;
       }
-      const url = 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
-      return url;
     }
     return '';
   };
   const handleFinish = async () => {
-    message.success('更新基本信息成功');
+    const updatedUserInfo: API.UserUpdateMyRequest = {
+      nickname: form.getFieldValue('nickname'),
+      userProfile: form.getFieldValue('userProfile'),
+      userPhone: form.getFieldValue('userPhone'),
+    };
+    console.log(updatedUserInfo)
+    const updateUserInfo = await updateMyUserUsingPost(updatedUserInfo);
+    if (updateUserInfo.data) {
+      message.success('更新基本信息成功');
+    } else {
+      message.error(updateUserInfo.msg);
+    }
   };
   return (
     <div className={styles.baseView}>
@@ -63,6 +103,7 @@ const BaseView: React.FC = () => {
         <>
           <div className={styles.left}>
             <ProForm
+              form={form}
               layout="vertical"
               onFinish={handleFinish}
               submitter={{
@@ -71,73 +112,25 @@ const BaseView: React.FC = () => {
                 },
                 render: (_, dom) => dom[1],
               }}
-              // initialValues={{
-              //   ...userData,
-              //   // phone: userData?.phone.split('-'),
-              // }}
+              initialValues={{
+                ...userData,
+              }}
               hideRequiredMark
             >
               <ProFormText
-                width="md"
-                name="name"
+                name="nickname"
                 label="昵称"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入您的昵称!',
-                  },
-                ]}
               />
               <ProFormTextArea
-                name="profile"
+                name="userProfile"
                 label="个人简介"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入个人简介!',
-                  },
-                ]}
-                placeholder="个人简介"
+                placeholder="我是个人简介"
               />
-              <ProFormFieldSet
-                name="city"
-                label="所在地区"
-                rules={[
-                  {
-                    required: true,
-                    message: '请选择所在地区!',
-                  },
-                ]}
-              >
-                <Cascader options={city} placeholder="请选择" />
-              </ProFormFieldSet>
               <ProFormText
-                width="md"
-                name="address"
-                label="街道地址"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入您的街道地址!',
-                  },
-                ]}
-              />
-              <ProFormFieldSet
-                name="phone"
+                name="userPhone"
                 label="联系电话"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入您的联系电话!',
-                  },
-                  {
-                    validator: validatorPhone,
-                  },
-                ]}
-              >
-                <Input className={styles.area_code} />
-                <Input className={styles.phone_number} />
-              </ProFormFieldSet>
+                placeholder="我是联系电话"
+              />
             </ProForm>
           </div>
           <div className={styles.right}>

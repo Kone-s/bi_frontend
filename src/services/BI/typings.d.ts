@@ -374,15 +374,25 @@ declare namespace API {
   };
 
   type UserRegisterRequest = {
+    nickname?: string;
+    captcha?: string;
+    checkPassword?: string;
+    userEmail?: string;
+    userPassword?: string;
+  };
+
+  type UserForgetRequest = {
+    nickname?: string;
+    captcha?: string;
     checkPassword?: string;
     userEmail?: string;
     userPassword?: string;
   };
 
   type UserUpdateMyRequest = {
-    userAvatar?: string;
     nickname?: string;
     userProfile?: string;
+    userPhone?: string;
   };
 
   type UserUpdateRequest = {

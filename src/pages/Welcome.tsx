@@ -4,34 +4,25 @@ import {
   getUserByIdTokens,
   getUserByIdUsingGet,
 } from '@/services/BI/scoreController';
-import { getLoginUserUsingGet, updateMyUserUsingPost } from '@/services/BI/userController';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Avatar, Button, Card, Col, Form, Input, message, Modal, Row, Statistic, theme } from 'antd';
+import { Button, Card, Col, message, Row, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const Welcome = () => {
   const { token } = theme.useToken();
   const [isSignedIn, setSignedIn] = useState(false);
-  const [userData, setUserData] = useState<API.BaseResponseLoginUserVO_>();
   const [score, setScore] = useState<API.BaseResponseLong_>();
   const [signStatus, setSignStatus] = useState<API.BaseResponseInt_>();
   const [tokens, setTokens] = useState<API.BaseResponseLong_>();
 
   const fetchData = async () => {
     try {
-      const [userRes, scoreRes, signRes, tokensRes] = await Promise.all([
-        getLoginUserUsingGet(),
+      const [scoreRes, signRes, tokensRes] = await Promise.all([
         getUserByIdUsingGet(),
         getSignByIdUsingGet(),
         getUserByIdTokens()
       ]);
-      if (userRes.data) {
-        setUserData(userRes);
-      } else {
-        message.error(userRes.msg);
-      }
-
       if (signRes.hasOwnProperty('data')) {
         setSignStatus(signRes);
       } else {
@@ -58,7 +49,6 @@ const Welcome = () => {
     fetchData();
   }, []);
 
-
   /**
  * 签到逻辑
  */
@@ -66,7 +56,7 @@ const Welcome = () => {
     const res = await checkInUsingPost();
     if (res.data === '签到成功') {
       setSignedIn(true);
-      message.success(res.data);
+      message.success('签到成功');
       fetchData();
     } else {
       message.error(res.msg);
@@ -119,22 +109,6 @@ const Welcome = () => {
             目前新注册用户可以免费调用10次（10积分，每次调用扣除1积分），当然您也可以通过签到获取更多积分。
             如需更多使用次数，请联系管理员：Motic2077
           </p>
-          {/* <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 16,
-            }}
-          >
-            <InfoCard
-              href="https://github.com/Kone-s/bi_backend"
-              title="相关技术"
-              desc={
-                '1、基于 Spring Boot + AIGC + React 的分析平台。 2、基于 ThreadPoolExecutor 创建任务队列实现Ai分析的并发执行、异步化，并使用 WebSocket 进行消息及时通知。 3、基于 Guava 的任务重试机制对分析过程失败的任务进行自动重试。 4、利用 Redis 进行图表数据的分布式缓存提高图表数据的查询速度。 5、基于 Redission 进行限流预防恶意请求。'
-              }
-              index={'*'}
-            />
-          </div> */}
           <Row gutter={16}>
             <Col span={6}>
               <Statistic title="积分" value={score?.data} />
@@ -155,7 +129,7 @@ const Welcome = () => {
               </Button>
             </Col>
             <Col span={6}>
-              <Statistic title="消耗 tokens 数" value={tokens?.data}/>
+              <Statistic title="消耗 tokens 数" value={tokens?.data} />
               <Button
                 type="primary"
                 style={{ marginTop: 10, fontSize: 14 }}

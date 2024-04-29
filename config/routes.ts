@@ -1,10 +1,5 @@
 ﻿export default [
   { path: '/user', layout: false, routes: [{ path: '/user/login', component: './User/Login' }] },
-  {
-    path: '/user',
-    layout: false,
-    routes: [{ path: '/user/register', component: './User/Register' }],
-  },
   { path: '/', redirect: '/welcome' },
   { path: '/welcome', name: '欢迎', icon: 'HeartOutlined', component: './Welcome' },
   { path: '/chart', name: '数据分析', icon: 'DotChartOutlined', component: './AddChart' },

@@ -1,6 +1,5 @@
 import CodeEditor from '@/components/CodeEditor';
 import { updateGenChartUsingPOST } from '@/services/BI/chartController';
-import { ProColumns } from '@ant-design/pro-components';
 import { Button, Card, Col, message, Modal, Row } from 'antd';
 import ReactECharts from 'echarts-for-react';
 import React, { useState } from 'react';

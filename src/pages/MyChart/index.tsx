@@ -1,14 +1,12 @@
 import { useModel } from '@@/exports';
 import ReactECharts from 'echarts-for-react';
 import React, { useEffect, useRef, useState } from 'react';
-import Search from "antd/es/input/Search";
 import { deleteChartUsingPOST, listMyChartByPageUsingPOST } from '@/services/BI/chartController';
-import { QuestionCircleOutlined, EyeOutlined, ExclamationCircleFilled, DeleteOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { EyeOutlined, ExclamationCircleFilled, DeleteOutlined, EllipsisOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ActionType } from '@ant-design/pro-table';
 import ProList from '@ant-design/pro-list';
 import UpdateChartModal from './components/UpdateChartModal';
 import {
-  Button,
   Collapse,
   Dropdown,
   MenuProps,
@@ -18,9 +16,6 @@ import {
   Space,
   Tag,
   Typography,
-  Avatar,
-  Card,
-  List,
 } from 'antd';
 import { ProListMetas } from '@ant-design/pro-list/lib';
 import { CHART_TYPE } from '@/constants/chart/chartType';
@@ -108,6 +103,32 @@ const MyChartPage: React.FC = () => {
     }
   };
 
+  const chartRef = useRef(null);
+
+  const downloadChart = () => {
+    if (chartRef.current) {
+      const instance = chartRef.current.getEchartsInstance();
+      const imgData = instance.getDataURL({
+        pixelRatio: 2, // 提高图片清晰度
+        backgroundColor: '#fff' // 设置背景颜色
+      });
+      downloadImage(imgData);
+    }
+  };
+
+  const downloadImage = (dataUrl) => {
+    const timestamp = Math.floor(Date.now() / 1000); // 获取当前时间的秒数时间戳
+    const filename = `chart-${timestamp}.png`; // 使用时间戳作为文件名
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename; // 设置下载文件名
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
   /**
  * 操作 下拉菜单：查看原始数据、删除
  */
@@ -128,6 +149,19 @@ const MyChartPage: React.FC = () => {
     },
     {
       key: '2',
+      label: (
+        <Space
+          onClick={() => {
+            downloadChart();
+          }}
+        >
+          <DownloadOutlined />
+          <Typography.Link>下载</Typography.Link>
+        </Space>
+      ),
+    },
+    {
+      key: '3',
       danger: true,
       onClick: () => {
         Modal.confirm({
@@ -207,24 +241,24 @@ const MyChartPage: React.FC = () => {
                   status="error"
                   title="图表生失败"
                   subTitle={item.execMessage}
-                extra={[
-                  // <Button
-                  //   key="tryAgain"
-                  //   type="primary"
-                  //   danger
-                  //   onClick={() => {
-                  //     reloadChart(item.id as number);
-                  //   }}
-                  // >
-                  //   请重试
-                  // </Button>,
-                ]}
+                  extra={[
+                    // <Button
+                    //   key="tryAgain"
+                    //   type="primary"
+                    //   danger
+                    //   onClick={() => {
+                    //     reloadChart(item.id as number);
+                    //   }}
+                    // >
+                    //   请重试
+                    // </Button>,
+                  ]}
                 />
               </div>
             )}
             {item.chartStatus === 'succeed' && (
               <div style={{ width: '100%' }}>
-                <ReactECharts option={JSON.parse(item.genChart ?? '{}')} />
+                <ReactECharts ref={chartRef} option={JSON.parse(item.genChart ?? '{}')} />
               </div>
             )}
             <div>
