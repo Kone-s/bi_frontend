@@ -239,13 +239,11 @@ declare namespace API {
   };
 
   type PageUser_ = {
-    countId?: string;
     current?: number;
-    maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
     pages?: number;
-    records?: User[];
+    records?: UserVO[];
     searchCount?: boolean;
     size?: number;
     total?: number;
@@ -404,12 +402,15 @@ declare namespace API {
   };
 
   type UserVO = {
-    createTime?: string;
     id?: number;
-    userAvatar?: string;
     nickname?: string;
+    userEmail?: string;
+    userAvatar?: string;
     userProfile?: string;
+    userPhone?: string;
     userRole?: string;
+    createTime?: string;
+    updateTime?: string;
   };
 
   type UserCaptchaRequest = {

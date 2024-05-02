@@ -216,3 +216,26 @@ export async function updateMyUserUsingPost(
     ...(options || {}),
   });
 }
+
+/** 搜索用户信息 GET /api/userCenter/search */
+export async function searchUser(options?: { [key: string]: any }) {
+  return request<API.BaseResponsePageUserVO_>('/api/user/search', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** listUserByPage POST /api/user/list/page */
+export async function listUserByPageUsingPOST(
+  body: API.UserQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageUser_>('/api/user/list/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}

@@ -7,7 +7,7 @@ import {
 import { getLoginUserUsingGet } from '@/services/BI/userController';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Avatar, Button, Card, Col, Form, Input, message, Modal, Row, Statistic, theme } from 'antd';
+import { Button, Card, Col, message, Row, Statistic, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const Welcome = () => {

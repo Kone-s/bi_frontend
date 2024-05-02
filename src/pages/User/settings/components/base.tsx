@@ -1,26 +1,15 @@
-import { city } from '@/constants/geographic/city';
 import { getLoginUserUsingGet, updateMyUserUsingPost } from '@/services/BI/userController';
 import { UploadOutlined } from '@ant-design/icons';
 import {
   ProForm,
-  ProFormFieldSet,
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { useRequest } from '@umijs/max';
-import { Button, Cascader, Form, Input, message, Upload } from 'antd';
+import { Button, Form, message, Upload } from 'antd';
 import React from 'react';
 import useStyles from './index.style';
 
-const validatorPhone = (rule: any, value: string[], callback: (message?: string) => void) => {
-  if (!value[0]) {
-    callback('请输入区号！');
-  }
-  if (!value[1]) {
-    callback('请输入电话号码！');
-  }
-  callback();
-};
 
 const BaseView: React.FC = () => {
   const { styles } = useStyles();
