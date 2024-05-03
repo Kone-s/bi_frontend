@@ -8,6 +8,18 @@ import { Button, Divider, message, Modal, Popconfirm, Space, Typography } from '
 import React, { useRef, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 
+export const waitTimePromise = async (time: number = 100) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, time);
+  });
+};
+
+export const waitTime = async (time: number = 100) => {
+  await waitTimePromise(time);
+};
+
 /**
  * 图表管理页面
  * @constructor
@@ -186,7 +198,7 @@ const AdminChartPage: React.FC<unknown> = () => {
             sortField: 'create_time',
             sortOrder: 'desc',
           };
-          console.log(searchParams);
+          await waitTime(500);
           const { data, code } = await listChartByPageUsingPOST(searchParams);
           setLoading(false);
           return {

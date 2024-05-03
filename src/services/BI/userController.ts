@@ -17,7 +17,7 @@ export async function sendCaptchaUsingPost(
   body: API.UserCaptchaRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean_>('/api/user/register/captcha', {
+  return request<API.BaseResponseBoolean_>('/api/captcha/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export async function sendForgetCaptchaUsingPost(
   body: API.UserCaptchaRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean_>('/api/user/forget/captcha', {
+  return request<API.BaseResponseBoolean_>('/api/captcha/forget', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

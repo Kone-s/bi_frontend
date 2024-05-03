@@ -58,13 +58,6 @@ const MyChartPage: React.FC = () => {
         // 拿到分页的数据
         setChartList(res.data.records ?? []);
         setTotal(res.data.total ?? 0);
-        if (res.data.records) {
-          res.data.records.forEach((data) => {
-            const chartOption = JSON.parse(data.genChart || '{}');
-            if (chartOption.title) chartOption.title = undefined;
-            data.genChart = JSON.stringify(chartOption);
-          });
-        }
       } else message.error('获取图表失败');
     } catch (e: any) {
       message.error('获取我的图表失败' + e.message);

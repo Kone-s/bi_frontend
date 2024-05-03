@@ -78,7 +78,6 @@ const BaseView: React.FC = () => {
       userProfile: form.getFieldValue('userProfile'),
       userPhone: form.getFieldValue('userPhone'),
     };
-    console.log(updatedUserInfo)
     const updateUserInfo = await updateMyUserUsingPost(updatedUserInfo);
     if (updateUserInfo.data) {
       message.success('更新基本信息成功');

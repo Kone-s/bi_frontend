@@ -177,7 +177,7 @@ const AdminUserPage: React.FC<unknown> = () => {
             sortField: 'create_time',
             sortOrder: 'desc',
           };
-          await waitTime(1000);
+          await waitTime(500);
           const { data, code } = await listUserByPageUsingPOST(searchParams);
           setLoading(false);
           return {
