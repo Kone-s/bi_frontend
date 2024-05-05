@@ -83,7 +83,7 @@ const AddChart: React.FC = () => {
               >
                 <TextArea allowClear showCount maxLength={150} placeholder="请输入你的分析需求" />
               </Form.Item>
-              <Form.Item name="chartName" label="图表名称">
+              <Form.Item name="chartName" label="图表名称" rules={[{ required: true, message: '图表名称' }]}>
                 <Input placeholder="请输入图表名称" />
               </Form.Item>
               <Form.Item name="chartType" label="图表类型">

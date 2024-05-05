@@ -219,7 +219,7 @@ export async function updateChartUsingPOST(
   body: API.ChartUpdateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean_>('/api/chart/update', {
+  return request<API.BaseResponseBoolean_>('/api/chart/update/gen', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

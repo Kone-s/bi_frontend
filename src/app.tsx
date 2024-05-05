@@ -45,7 +45,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   useEffect(() => {
     if (currentUser) {
       const userId = currentUser?.id
-      const newSocket = new WebSocket('ws://localhost:8080/api/websocket/' + userId);
+      // const newSocket = new WebSocket('ws://localhost:8080/api/websocket/' + userId);
+      const newSocket = new WebSocket('ws://47.109.191.16:8080/api/websocket/' + userId);
       newSocket.onopen = () => {
         console.log('WebSocket已连接');
       };

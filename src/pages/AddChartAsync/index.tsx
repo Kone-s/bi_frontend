@@ -44,7 +44,7 @@ const AddChartAsync: React.FC = () => {
       <Row gutter={24}>
         <Col span={24}>
           <Card title={'分析设置'}>
-          <Form
+            <Form
               form={form}
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 16 }}
@@ -58,7 +58,7 @@ const AddChartAsync: React.FC = () => {
               >
                 <TextArea allowClear showCount maxLength={150} placeholder="请输入你的分析需求" />
               </Form.Item>
-              <Form.Item name="chartName" label="图表名称">
+              <Form.Item name="chartName" label="图表名称" rules={[{ required: true, message: '图表名称' }]}>
                 <Input placeholder="请输入图表名称" />
               </Form.Item>
               <Form.Item name="chartType" label="图表类型">
@@ -68,8 +68,8 @@ const AddChartAsync: React.FC = () => {
                 name="file"
                 label="原始数据"
                 rules={[{ required: true, message: '请上传原始数据' }]}
-                // valuePropName="fileList"
-                // getValueFromEvent={normFile}
+              // valuePropName="fileList"
+              // getValueFromEvent={normFile}
               >
                 <Upload name="file" maxCount={1}>
                   <Button icon={<UploadOutlined />}>点击上传</Button>

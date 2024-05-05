@@ -8,9 +8,6 @@ const Footer: React.FC = () => {
   return (
     <DefaultFooter
       style={{
-        position:'fixed',
-        bottom:0,
-        width:'80%',
         background: 'none',
       }}
       copyright={`${currentYear} ${defaultMessage}`}

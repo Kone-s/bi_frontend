@@ -52,6 +52,18 @@ const AdminChartPage: React.FC<unknown> = () => {
     }
   };
 
+  const [currentChartData, setCurrentChartData] = useState(null);
+
+  const handleViewChart = (genChart) => {
+    setCurrentChartData(genChart); // 设置当前图表数据
+    setIsModalOpen(true); // 打开模态框
+  };
+
+  const handleCancel = () => {
+    setCurrentChartData(null);
+    setIsModalOpen(false); // 关闭模态框
+  };
+
   /**
    * 表格列配置
    */
@@ -95,20 +107,22 @@ const AdminChartPage: React.FC<unknown> = () => {
           <>
             <Typography.Link
               onClick={() => {
-                setIsModalOpen(true);
+                handleViewChart(record.genChart);
               }}
             >
               查看
             </Typography.Link>
             <Modal
               title="图表"
+              forceRender
+              width={'70%'}
               open={isModalOpen}
               onCancel={() => {
-                setIsModalOpen(false);
+                handleCancel();
               }}
               footer={null}
             >
-              <ReactECharts option={JSON.parse(record.genChart ?? '{}')} />
+              <ReactECharts notMerge style={{height: '500px'}} option={JSON.parse(currentChartData ?? '{}')} />
             </Modal>
           </>
         );
